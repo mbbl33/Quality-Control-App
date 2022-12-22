@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.quickbirdstudios.opencvexample"
         minSdk 21
-        targetSdk 30
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -46,6 +46,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Remove/comment out the one you aren't going to need
-    implementation(project(":opencv_VERSION"))
-    implementation(project(":opencv-contrib_VERSION"))
+    // opencv 3.4.1
+    /*implementation 'com.quickbirdstudios:opencv:3.4.1'*/
+
+    // opencv 3.4.4 with contribution packages
+    implementation 'com.quickbirdstudios:opencv-contrib:3.4.15'
 }

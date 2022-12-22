@@ -10,5 +10,5 @@ rootProject.name = "OpenCV-QuickbirdStudios"
 include ':app'
 
 // Remove/comment out the one you aren't going to need
-include ":opencv_VERSION"
-include ":opencv-contrib_VERSION"
+/*include ":opencv_4.5.3.0"*/
+include ":opencv-contrib_3.4.15"
