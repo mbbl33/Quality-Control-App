@@ -46,16 +46,16 @@ public class AnalyzedDrawer {
     }
 
 
-    public Mat drawSizes(Mat matRaw){
-        Scalar textColor = new Scalar(138,43,226);
+    public Mat drawSizes(Mat matRaw) {
+        Scalar textColor = new Scalar(0, 255, 0);
         int textOffset = 45;
-        int textFontSize = 2;
+        int textFontSize = 1;
         Mat out = matRaw.clone();
-        for (RotatedRect rect: imageAnalyzer.getRects()) {
-            Imgproc.circle(out, rect.center, 1,new Scalar(0,255,0),10,  Imgproc.LINE_AA);
-            Imgproc.putText(out, String.format("Width %f cm", imageAnalyzer.getWidthInCM(rect)), new Point(rect.center.x, rect.center.y  + textOffset *2), Core.FONT_HERSHEY_PLAIN, textFontSize ,  textColor);
-            Imgproc.putText(out, String.format("Height %f cm", imageAnalyzer.getHeightInCM(rect)), new Point(rect.center.x, rect.center.y  + textOffset), Core.FONT_HERSHEY_PLAIN, textFontSize ,  textColor);
-            Imgproc.putText(out, String.format("Area %f cm^2", imageAnalyzer.getAreaInCM_2(rect)), rect.center, Core.FONT_HERSHEY_PLAIN, textFontSize ,  textColor);
+        for (RotatedRect rect : imageAnalyzer.getRects()) {
+            Imgproc.circle(out, rect.center, 1, textColor, 10, Imgproc.LINE_AA);
+            Imgproc.putText(out, String.format("Width %f cm", imageAnalyzer.getWidthInCM(rect)), new Point(rect.center.x, rect.center.y + textOffset * 2), Core.FONT_HERSHEY_TRIPLEX, textFontSize, textColor);
+            Imgproc.putText(out, String.format("Height %f cm", imageAnalyzer.getHeightInCM(rect)), new Point(rect.center.x, rect.center.y + textOffset), Core.FONT_HERSHEY_TRIPLEX, textFontSize, textColor);
+            Imgproc.putText(out, String.format("Area %f cm^2", imageAnalyzer.getAreaInCM_2(rect)), rect.center, Core.FONT_HERSHEY_TRIPLEX, textFontSize, textColor);
         }
         return out;
     }
