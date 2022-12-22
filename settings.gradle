@@ -6,7 +6,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "OpenCV-QuickbirdStudios"
+rootProject.name = "quality-control-app"
 include ':app'
 
 // Remove/comment out the one you aren't going to need

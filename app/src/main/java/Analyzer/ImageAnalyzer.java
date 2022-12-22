@@ -6,8 +6,12 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.aruco.DetectorParameters;
 import org.opencv.aruco.Dictionary;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.aruco.Aruco;
@@ -42,10 +46,13 @@ public class ImageAnalyzer {
 
     public void analyze(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat inputMat = inputFrame.rgba();
+        Log.d("Aruco", "here");
         this.lines = detectLines(inputMat);
         contours = detectObj(inputMat);
-        //arucoCorners = detectAruco(inputMat);
-       // Log.d("Aruco", String.valueOf(arucoCorners));
+        arucoCorners = detectAruco(inputMat);
+        if (arucoCorners.size() != 0) {
+            Log.d("Aruco ", Double.toString(getPixelToCM()));
+        }
     }
 
     private Mat detectLines(Mat matRaw) {
@@ -79,19 +86,42 @@ public class ImageAnalyzer {
         return objects_contours;
     }
 
-
-    private List<Mat> detectAruco(Mat matRaw) {
-        List<Mat> corners = new ArrayList<>();
-        Mat ids = new Mat();
+    private ArrayList<Mat> detectAruco(Mat matRaw) {
+        Mat imgGray = new Mat();
+        MatOfInt ids = new MatOfInt();
+        ArrayList<Mat> corners = new ArrayList<>();
+        Imgproc.cvtColor(matRaw, imgGray, Imgproc.COLOR_RGB2GRAY);
         DetectorParameters parameters = DetectorParameters.create();
         Dictionary arucoDict = Aruco.getPredefinedDictionary(Aruco.DICT_5X5_50);
-        Aruco.detectMarkers(matRaw, arucoDict, corners, ids, parameters);
+        Aruco.detectMarkers(imgGray, arucoDict, corners, ids, parameters);
         return corners;
     }
 
-    private double getPixelToCM(){
+    private double getPixelToCM() {
         int perimeterCM = 20;
-        double perimeterPixel = Imgproc.arcLength((MatOfPoint2f) arucoCorners.get(0),true);
-        return (perimeterPixel/perimeterCM);
+        Rect rect = Imgproc.boundingRect(arucoCorners.get(0));
+        Log.d("Aruco", "1");
+        double perimeterAruco = 2 * rect.height + 2 * rect.width;
+        Log.d("Aruco", Double.toString(perimeterAruco));
+        return (perimeterAruco / perimeterCM);
+    }
+
+    private double getPixelToCM_2(){
+        int areaCM_2 = 25;
+        double arucoArea = Imgproc.contourArea(arucoCorners.get(0));
+        return arucoArea / areaCM_2;
+    }
+
+    private RotatedRect getRect(MatOfPoint matPts) {
+        MatOfPoint2f pts = new MatOfPoint2f(matPts.toArray());
+        return Imgproc.minAreaRect(pts);
+    }
+
+    private List<RotatedRect> contoursToRect(List<MatOfPoint> contours) {
+        ArrayList<RotatedRect> rects = new ArrayList<>();
+        for (MatOfPoint cnt : contours) {
+            rects.add(getRect(cnt));
+        }
+        return  rects;
     }
 }

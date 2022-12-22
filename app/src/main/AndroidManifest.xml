@@ -25,7 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenCVExample">
         <activity
-            android:name=".MainActivity"
+            android:name="com.quickbirdstudios.opencvexample.MainActivity"
             android:configChanges="orientation"
             android:exported="true"
             android:screenOrientation="landscape">
