@@ -26,10 +26,13 @@ public class ImageAnalyzer {
     private List<MatOfPoint> contours;
     private List<Mat> arucoCorners;
 
+    private ArrayList<RotatedRect> rects = new ArrayList<>();
+
     public ImageAnalyzer() {
         lines = new Mat();
         contours = new ArrayList<>();
         arucoCorners = new ArrayList<>();
+        rects = new ArrayList<>();
     }
 
     public Mat getLines() {
@@ -44,15 +47,31 @@ public class ImageAnalyzer {
         return arucoCorners;
     }
 
+    public ArrayList<RotatedRect> getRects() {
+        return rects;
+    }
+
     public void analyze(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        cleanDate();
         Mat inputMat = inputFrame.rgba();
-        Log.d("Aruco", "here");
         this.lines = detectLines(inputMat);
         contours = detectObj(inputMat);
         arucoCorners = detectAruco(inputMat);
-        if (arucoCorners.size() != 0) {
-            Log.d("Aruco ", Double.toString(getPixelToCM()));
+        if (arucoDetected()) {
+            rects = contoursToRect(contours);
+            Log.d("Aruco pixel cm ", Double.toString(getPixelToCM()));
         }
+    }
+
+    private boolean arucoDetected() {
+        return 0 < arucoCorners.size();
+    }
+
+    private void cleanDate() {
+        lines = new Mat();
+        contours = new ArrayList<>();
+        arucoCorners = new ArrayList<>();
+        rects = new ArrayList<>();
     }
 
     private Mat detectLines(Mat matRaw) {
@@ -98,15 +117,16 @@ public class ImageAnalyzer {
     }
 
     private double getPixelToCM() {
+        if (!arucoDetected()) return -1;
         int perimeterCM = 20;
         Rect rect = Imgproc.boundingRect(arucoCorners.get(0));
-        Log.d("Aruco", "1");
         double perimeterAruco = 2 * rect.height + 2 * rect.width;
-        Log.d("Aruco", Double.toString(perimeterAruco));
+        Log.d("Aruco perimeter", Double.toString(perimeterAruco));
         return (perimeterAruco / perimeterCM);
     }
 
-    private double getPixelToCM_2(){
+    private double getPixelToCM_2() {
+        if (!arucoDetected()) return -1;
         int areaCM_2 = 25;
         double arucoArea = Imgproc.contourArea(arucoCorners.get(0));
         return arucoArea / areaCM_2;
@@ -117,11 +137,22 @@ public class ImageAnalyzer {
         return Imgproc.minAreaRect(pts);
     }
 
-    private List<RotatedRect> contoursToRect(List<MatOfPoint> contours) {
+    private ArrayList<RotatedRect> contoursToRect(List<MatOfPoint> contours) {
         ArrayList<RotatedRect> rects = new ArrayList<>();
         for (MatOfPoint cnt : contours) {
             rects.add(getRect(cnt));
         }
-        return  rects;
+        return rects;
+    }
+
+    public double getHeightInCM(RotatedRect rect) {
+        return rect.size.height / getPixelToCM();
+    }
+
+    public double getWidthInCM(RotatedRect rect) {
+        return rect.size.width / getPixelToCM();
+    }
+    public double getAreaInCM_2(RotatedRect rect){
+        return rect.size.area() / getPixelToCM_2();
     }
 }
