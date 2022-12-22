@@ -2,6 +2,7 @@ package com.quickbirdstudios.opencvexample
 
 import Analyzer.AnalyzedDrawer
 import Analyzer.ImageAnalyzer
+import Analyzer.ObjDrawer
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceView
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     /*var drawView  : DrawView? = null //Initialising draw object*/
     var imageAnalyzer: ImageAnalyzer? = null
     var analyzedDrawer: AnalyzedDrawer? = null
+    var objDrawer: ObjDrawer? = null
 
     private val mLoaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(this) {
         override fun onManagerConnected(status: Int) {
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
                     mOpenCvCameraView!!.enableView()
                     imageAnalyzer = ImageAnalyzer()
                     analyzedDrawer = AnalyzedDrawer(imageAnalyzer)
+                    //objDrawer = ObjDrawer()
                 }
                 else -> {
                     super.onManagerConnected(status)
@@ -61,13 +64,15 @@ class MainActivity : AppCompatActivity() {
          * @return the image to be displayed on the screen
          */
         override fun onCameraFrame(inputFrame: CvCameraViewFrame): Mat {
-
+            objDrawer = ObjDrawer(inputFrame.rgba().width(), inputFrame.rgba().height());
             //lineImg.width is always 800.0 - lineImg.height is always 600.0
             //drawView = new DrawView(473, 473);
             //drawView.drawRectangle(lineImg);
-            imageAnalyzer?.analyze(inputFrame)
+            //objDrawer?.setSize(inputFrame.rgba().height(), inputFrame.rgba().width());
+            return objDrawer?.testDraw() ?: return inputFrame.rgba();
+            /*imageAnalyzer?.analyze(inputFrame)
             return analyzedDrawer?.draw(inputFrame) ?:
-            return inputFrame.rgba();
+            return inputFrame.rgba();*/
         }
     }
 
