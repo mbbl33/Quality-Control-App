@@ -6,6 +6,8 @@ import Analyzer.ObjDrawer
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceView
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import org.opencv.android.BaseLoaderCallback
 import org.opencv.android.CameraBridgeViewBase
@@ -14,15 +16,19 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
 import org.opencv.android.LoaderCallbackInterface
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
+import processing.android.CompatUtils
+import processing.android.PFragment
 
 
 class MainActivity : AppCompatActivity() {
     private val LOGTAG = "OpenCV_Log"
     private var mOpenCvCameraView: CameraBridgeViewBase? = null
+
     /*var drawView  : DrawView? = null //Initialising draw object*/
     var imageAnalyzer: ImageAnalyzer? = null
     var analyzedDrawer: AnalyzedDrawer? = null
     var objDrawer: ObjDrawer? = null
+    var frame: FrameLayout? = null
 
     private val mLoaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(this) {
         override fun onManagerConnected(status: Int) {
@@ -32,7 +38,6 @@ class MainActivity : AppCompatActivity() {
                     mOpenCvCameraView!!.enableView()
                     imageAnalyzer = ImageAnalyzer()
                     analyzedDrawer = AnalyzedDrawer(imageAnalyzer)
-                    //objDrawer = ObjDrawer()
                 }
                 else -> {
                     super.onManagerConnected(status)
@@ -48,6 +53,8 @@ class MainActivity : AppCompatActivity() {
         mOpenCvCameraView = findViewById(R.id.opencv_surface_view) as CameraBridgeViewBase
         mOpenCvCameraView!!.visibility = SurfaceView.VISIBLE
         mOpenCvCameraView!!.setCvCameraViewListener(cvCameraViewListener)
+
+
     }
 
     protected fun getCameraViewList(): List<CameraBridgeViewBase?>? {
@@ -64,7 +71,14 @@ class MainActivity : AppCompatActivity() {
          * @return the image to be displayed on the screen
          */
         override fun onCameraFrame(inputFrame: CvCameraViewFrame): Mat {
-            objDrawer = ObjDrawer(inputFrame.rgba().width(), inputFrame.rgba().height());
+            Log.d("here", "0")
+            objDrawer =
+                ObjDrawer(inputFrame.rgba().width(), inputFrame.rgba().height(), this@MainActivity);
+            Log.d("here", "1")
+            val fragment = PFragment(objDrawer)
+            Log.d("here", "2")
+            //fragment.setView(mOpenCvCameraView, this@MainActivity)
+            Log.d("here", "3")
             //lineImg.width is always 800.0 - lineImg.height is always 600.0
             //drawView = new DrawView(473, 473);
             //drawView.drawRectangle(lineImg);
