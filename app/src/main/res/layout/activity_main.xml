@@ -83,6 +83,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="64dp"
             android:clickable="true"
+            android:onClick="openProcessing"
             opencv:backgroundTint="#6E6666"
             opencv:layout_constraintBottom_toBottomOf="parent"
             opencv:layout_constraintEnd_toEndOf="parent"
