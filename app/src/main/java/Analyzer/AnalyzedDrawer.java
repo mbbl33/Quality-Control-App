@@ -23,7 +23,7 @@ public class AnalyzedDrawer {
     public Mat draw(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat img = inputFrame.rgba();
         //img = drawLinesOnImg(img, imageAnalyzer.getLines());
-        img = drawContours(img, imageAnalyzer.getContours());
+        img = drawContours(img, imageAnalyzer.getContours(), new Scalar(0, 0, 255));
         img = drawSizes(img);
         return img;
     }
@@ -37,9 +37,9 @@ public class AnalyzedDrawer {
         return out;
     }
 
-    public Mat drawContours(Mat matRaw, List<MatOfPoint> contours) {
+    public Mat drawContours(Mat matRaw, List<MatOfPoint> contours, Scalar color) {
         Mat out = matRaw.clone();
-        Imgproc.polylines(out, contours, true, new Scalar(0, 0, 255), 2);
+        Imgproc.polylines(out, contours, true, color , 2);
         return out;
     }
 

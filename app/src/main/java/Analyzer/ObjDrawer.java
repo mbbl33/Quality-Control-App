@@ -1,6 +1,9 @@
 package Analyzer;
 
+import android.content.Intent;
 import android.util.Log;
+
+import com.quickbirdstudios.opencvexample.MainActivity;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -17,6 +20,8 @@ import processing.opengl.PGraphics3D;
 
 
 public class ObjDrawer extends PApplet {
+
+
 
     private PGraphics buffer;
     private PShape obj;
@@ -43,8 +48,12 @@ public class ObjDrawer extends PApplet {
         this.currentView = currentView;
     }
 
+    public PGraphics getBuffer() {
+        return buffer;
+    }
+
     public void settings() {
-        fullScreen(P3D);
+        size(width, height, P3D);
     }
 
     public void setup() {
@@ -54,24 +63,26 @@ public class ObjDrawer extends PApplet {
 
     @Override
     public void draw() {
-        drawObjOffscreen();
-
+        Mat mat = drawObjOffscreen();
+        MatBox.mat = mat;
         image(buffer, 0, 0);
+        Intent intent = new Intent(this.getActivity(),MainActivity.class);
+        startActivity(intent);
     }
 
 
     public Mat drawObjOffscreen() {
         buffer.beginDraw();
         buffer.background(255);
-        buffer.translate(width / 2, height / 2, 800);
+        buffer.translate(width / 2, height / 2, 500);
         setView(currentView);
-        rotateForDemo(); //just for Demo
+       // rotateForDemo(); //just for Demo
         buffer.shape(obj);
         buffer.endDraw();
         return toMat(buffer.get());
     }
 
-    Mat toMat(PImage image) {
+    public Mat toMat(PImage image) {
         //converts a processing img to opencv matrix
         //source: https://gist.github.com/Spaxe/3543f0005e9f8f3c4dc5
         int w = image.width;

@@ -87,7 +87,7 @@ public class ImageAnalyzer {
 
 
     //source: https://www.youtube.com/watch?v=lbgl2u6KrDU
-    private List<MatOfPoint> detectObj(Mat matRaw) {
+    public List<MatOfPoint> detectObj(Mat matRaw) {
         Mat imgGray = new Mat();
         Mat mask = new Mat();
         List<MatOfPoint> contours = new ArrayList<>();

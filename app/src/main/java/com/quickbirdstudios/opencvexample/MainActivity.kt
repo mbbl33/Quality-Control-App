@@ -2,7 +2,7 @@ package com.quickbirdstudios.opencvexample
 
 import Analyzer.AnalyzedDrawer
 import Analyzer.ImageAnalyzer
-import Analyzer.ObjDrawer
+import Analyzer.MatBox
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +16,7 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2
 import org.opencv.android.LoaderCallbackInterface
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
-import com.quickbirdstudios.opencvexample.DummyForProcessing
+import org.opencv.core.Scalar
 
 class MainActivity : AppCompatActivity() {
     private val LOGTAG = "OpenCV_Log"
@@ -25,7 +25,8 @@ class MainActivity : AppCompatActivity() {
     /*var drawView  : DrawView? = null //Initialising draw object*/
     var imageAnalyzer: ImageAnalyzer? = null
     var analyzedDrawer: AnalyzedDrawer? = null
-    var objDrawer: ObjDrawer? = ObjDrawer()
+    var width: Int = -1
+    var height: Int = -1
 
     private val mLoaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(this) {
         override fun onManagerConnected(status: Int) {
@@ -51,7 +52,6 @@ class MainActivity : AppCompatActivity() {
         mOpenCvCameraView!!.visibility = SurfaceView.VISIBLE
         mOpenCvCameraView!!.setCvCameraViewListener(cvCameraViewListener)
 
-
     }
 
     protected fun getCameraViewList(): List<CameraBridgeViewBase?>? {
@@ -68,14 +68,16 @@ class MainActivity : AppCompatActivity() {
          * @return the image to be displayed on the screen
          */
         override fun onCameraFrame(inputFrame: CvCameraViewFrame): Mat {
-            /*if (!objDrawer!!.isSizeSet() {
-                objDrawer!!.setHeight(inputFrame.rgba().height())
-                objDrawer!!.setWidth(inputFrame.rgba().width())
-                objDrawer!!.setup()
-            }
-            return objDrawer?.testDraw() ?: return inputFrame.rgba();*/
+            width = inputFrame.rgba().width()
+            height = inputFrame.rgba().height()
             imageAnalyzer?.analyze(inputFrame)
-            return analyzedDrawer?.draw(inputFrame) ?: return inputFrame.rgba()
+            var out: Mat? = analyzedDrawer?.draw(inputFrame)
+            if (MatBox.mat != null) {
+
+               out = analyzedDrawer?.drawContours( out,imageAnalyzer?.detectObj(MatBox.mat),
+                   Scalar(255.0, 0.0, 0.0))
+            }
+            return out ?: return inputFrame.rgba()
         }
     }
 
@@ -106,6 +108,9 @@ class MainActivity : AppCompatActivity() {
     fun openProcessing(view: View?) {
         //just for testing
         val intent = Intent(this, DummyForProcessing::class.java)
+        intent.putExtra("perspective", view?.tag.toString())
+        intent.putExtra("width", width)
+        intent.putExtra("height", height)
         startActivity(intent)
     }
 }
